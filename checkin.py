@@ -482,6 +482,12 @@ async def main():
 		else:
 			print('[INFO] No balance changes detected')
 
+	# 支持环境变量 ALWAYS_NOTIFY 或手动触发 (workflow_dispatch) 时强制发送通知
+	always_notify = os.getenv('ALWAYS_NOTIFY', '').lower() in ('true', '1', 'yes') or os.getenv('GITHUB_EVENT_NAME') == 'workflow_dispatch'
+	if always_notify:
+		need_notify = True
+		print('[NOTIFY] Always notify or manual trigger (workflow_dispatch) detected, will send notification')
+
 	# 只要需要发送通知，就将所有账号统一渲染为同一种卡片内容
 	if need_notify:
 		for i, account in enumerate(accounts):

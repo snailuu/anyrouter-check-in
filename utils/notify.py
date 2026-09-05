@@ -124,9 +124,14 @@ class NotificationKit:
 
 		# Bark API 支持 GET/POST，这里使用 POST JSON 方式支持更多参数
 		# 文档: https://bark.day.app/#/tutorial
+		bark_key = self.bark_key.strip().rstrip('/')
+		# 如果用户填了完整 URL 或带路径（如 https://api.day.app/key），提取末尾真正的 key
+		if '/' in bark_key:
+			bark_key = bark_key.split('/')[-1]
+
 		url = f'{self.bark_server.rstrip("/")}/push'
 		data = {
-			'device_key': self.bark_key,
+			'device_key': bark_key,
 			'title': title,
 			'body': content,
 			'icon': 'https://anyrouter.top/favicon.ico',  # 可选：尝试使用 AnyRouter 图标
@@ -134,7 +139,8 @@ class NotificationKit:
 		}
 
 		with httpx.Client(timeout=30.0) as client:
-			client.post(url, json=data)
+			resp = client.post(url, json=data)
+			resp.raise_for_status()
 
 	def push_message(self, title: str, content: str, msg_type: Literal['text', 'html', 'green', 'orange', 'red', 'blue'] = 'text'):
 		feishu_template = msg_type if msg_type in {'green', 'orange', 'red', 'blue'} else 'blue'

@@ -1,7 +1,9 @@
 name: AnyRouter 自动签到
 on:
   schedule:
-    - cron: '0 */6 * * *'
+    # 北京时间约 08:23 与 21:07（UTC 00:23 与 13:07）
+    - cron: '23 0 * * *'
+    - cron: '7 13 * * *'
   workflow_dispatch:
 
 jobs:
@@ -100,8 +102,9 @@ jobs:
         GOTIFY_URL: ${{ secrets.GOTIFY_URL }}
         GOTIFY_TOKEN: ${{ secrets.GOTIFY_TOKEN }}
         GOTIFY_PRIORITY: ${{ secrets.GOTIFY_PRIORITY }}
-        BARK_KEY: ${{ secrets.BARK_KEY }}
-        BARK_SERVER: ${{ secrets.BARK_SERVER }}
+        BARK_KEY: ${{ secrets.BARK_KEY || vars.BARK_KEY }}
+        BARK_SERVER: ${{ secrets.BARK_SERVER || vars.BARK_SERVER }}
+        ALWAYS_NOTIFY: ${{ secrets.ALWAYS_NOTIFY || vars.ALWAYS_NOTIFY }}
       run: |
         uv run checkin.py
 
